@@ -47,32 +47,6 @@ app.get('/flv', function (request, response) {
         response.writeHead('200', "Partial Content");
         stream.pipe(response);
     }
-
-    // response.setHeader("Content-Type", "video/x-flve");
-    // realpath = '/var/www/ffmpeg/_live.flv';
-    // var stats = fs.statSync(realpath);
-    // if (request.headers["range"]) {
-    //     var range = parseRange(request.headers["range"], stats.size);
-    //     console.log(range)
-    //     if (range) {
-    //         response.setHeader("Content-Range", "bytes " + range.start + "-" + range.end + "/" + stats.size);
-    //         response.setHeader("Content-Length", (range.end - range.start + 1));
-    //         var stream = fs.createReadStream(realpath, {
-    //             "start": range.start,
-    //             "end": range.end
-    //         });
-    //         response.writeHead('206', "Partial Content");
-    //         stream.pipe(response);
-    //     } else {
-    //         response.removeHeader("Content-Length");
-    //         response.writeHead(416, "Request Range Not Satisfiable");
-    //         response.end();
-    //     }
-    // } else {
-    //     var stream = fs.createReadStream(realpath);
-    //     response.writeHead('200', "Partial Content");
-    //     stream.pipe(response);
-    // }
 });
 
-app.listen(8080);
+app.listen(8000);
