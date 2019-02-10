@@ -1,0 +1,19 @@
+{
+    "result": true,
+    "message": "success",
+    "data": {
+        "flvTitle": "使用WEBPACK构建一个简易的WEB项目",
+        "flvThumb": "https://picsum.photos/600/400?image=10",
+        "flvComment": 12,
+        "flvView": 43,
+        "flvHeart": 1345,
+        "flvStar": 321,
+        "flvShare": 324,
+        "flvGood": 412,
+        "flvBad": 0,
+        "flvUrl": "https://www.cool1024.com:8000/flv?video=1.flv",
+        "flvUp": "梦想的乡",
+        "flvUpAvatar": "https://hello1024.oss-cn-beijing.aliyuncs.com/upload/goods/201808310421101174382331f7a611f0fcec856c2120ab5b88c236f3fa19.63574178.jpg",
+        "flvUpFans": 130
+    }
+}
