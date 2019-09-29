@@ -23,7 +23,7 @@ npm run start
  * 192.168.1.152:8000 ---- YOUR SEVER IP:PORT
  * 1.flv ---- A VIDEO IN PUBLIC DIRECTORY(`public/1.flv`)
 
-### Get test flv vide
+### Get test flv video
 ```cmd
 // input: source.mp4
 // output: test.flv
