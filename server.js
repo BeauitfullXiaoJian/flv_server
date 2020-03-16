@@ -8,6 +8,8 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(__dirname + '/public'));
 
+const gm = require('gm');
+const { getDirFiles } = require('./file.js');
 
 // 跨域设置
 app.all("*", function (req, res, next) {
@@ -47,6 +49,56 @@ app.get('/flv', function (request, response) {
         response.writeHead('200', "Partial Content");
         stream.pipe(response);
     }
+});
+
+
+/**
+ * 获取服务器所有文件
+ */
+app.get('/files', function (req, res) {
+    const params = req.query;
+    const limit = params.limit || 10;
+    const offset = params.offset || 0
+    const dir = __dirname + '/public';
+    const files = getDirFiles(dir);
+    res.send({
+        result: true,
+        code: 200,
+        message: '',
+        data: {
+            total: files.length,
+            rows: files.map(path => ({
+                id: 0,
+                videoTitle: path.replace(dir, ''),
+                videoSourceUrl: 'http://192.168.31.215:8000/flv?video=' + path.replace(dir, ''),
+                videoThumbUrl: 'http://192.168.31.215:8000/thumb?path=' + path.replace(dir, ''),
+                videoLabel: ''
+            })).splice(offset, limit)
+        }
+    });
+});
+
+app.get('/video', function (req, res) {
+    res.send({
+        result: true,
+        code: 200,
+        message: '',
+        data: {
+            id: 0,
+            videoTitle: 'HOME/WAVR00024_A.mp4',
+            videoSourceUrl: 'http://192.168.31.215:8000/flv?video=HOME/WAVR00024_C.mp4',
+            videoThumbUrl: '',
+            videoLabel: ''
+        }
+    });
+});
+
+app.get('/thumb', function (req, res) {
+    const path = __dirname + '/public' + req.query.path;
+    gm(path).resize(400).stream('JPG', (err, stream) => {
+        res.set('Content-Type', 'image/jpeg');
+        stream.pipe(res);
+    });
 });
 
 app.listen(8000);
