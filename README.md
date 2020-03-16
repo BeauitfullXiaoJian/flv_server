@@ -1,6 +1,6 @@
-# Example For Express Video Server
+# Example For Express File Server
 
-Support flv.js, ijkplayer
+Support video, pdf, image.
 
 ## Installation
 ```cmd
@@ -9,15 +9,12 @@ npm i
 
 ## Run
 ```cmd
-node server.js
-
-// or 
 npm run start
 ```
 
-## Usage 
+<!-- ## Usage  -->
 
-### Video Source Dir && Get Video
+<!-- ### Video Source Dir && Get Video
 1. You can put the video file into directory `public`
 2. Request url like http://192.168.1.152:8000/flv?video=1.flv
  * 192.168.1.152:8000 ---- YOUR SEVER IP:PORT
@@ -28,9 +25,10 @@ npm run start
 // input: source.mp4
 // output: test.flv
 ffmpeg -i source.mp4 -vcodec libx264 -c:a aac -flvflags add_keyframe_index test.flv
-```
+``` -->
 
 ### Run Environment
 
 1. ffmpeg
-2. imagemagick ghostscript poppler (https://www.npmjs.com/package/pdf-image, http://blog.alivate.com.au/poppler-windows/)
+2. imagemagick
+3. ghostscript

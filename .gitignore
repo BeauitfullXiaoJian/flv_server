@@ -2,3 +2,4 @@ node_modules
 public/*.flv
 bin/*
 temp/*
+public/*
