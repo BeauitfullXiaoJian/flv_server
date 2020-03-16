@@ -29,3 +29,8 @@ npm run start
 // output: test.flv
 ffmpeg -i source.mp4 -vcodec libx264 -c:a aac -flvflags add_keyframe_index test.flv
 ```
+
+### Run Environment
+
+1. ffmpeg
+2. imagemagick ghostscript poppler (https://www.npmjs.com/package/pdf-image, http://blog.alivate.com.au/poppler-windows/)
