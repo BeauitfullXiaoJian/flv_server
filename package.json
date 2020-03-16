@@ -12,6 +12,11 @@
     "dependencies": {
         "body-parser": "^1.18.3",
         "express": "^4.16.3",
+<<<<<<< HEAD
         "gm": "^1.23.1"
+=======
+        "iconv-lite": "^0.5.1",
+        "pdf-image": "^2.0.0"
+>>>>>>> a97ba517f34f5d34c47231cb834f5e18e27bac44
     }
 }
