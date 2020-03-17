@@ -2,15 +2,28 @@
 
 Support video, pdf, image.
 
+## Run Environment
+
+1. ffmpeg
+2. imagemagick
+3. ghostscript
+
+
 ## Installation
-```cmd
-npm i
+```
+npm install
 ```
 
 ## Run
-```cmd
+```
 npm run start
 ```
+
+### Express Api
+1. `/dir` Get all files in the target directory.
+2. `/file` Get all files in the public directory.
+3. `/thumb` Get file's preview thumb.
+
 
 <!-- ## Usage  -->
 
@@ -27,8 +40,3 @@ npm run start
 ffmpeg -i source.mp4 -vcodec libx264 -c:a aac -flvflags add_keyframe_index test.flv
 ``` -->
 
-### Run Environment
-
-1. ffmpeg
-2. imagemagick
-3. ghostscript

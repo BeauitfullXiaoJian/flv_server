@@ -35,11 +35,14 @@ function dirAll(dirPath) {
 
 function dirSearch(dirPath) {
     const dirPathArray = fs.readdirSync(dirPath);
-    const searchResult = { dir: [], img: [], video: [], pdf: [], other: [] };
+    const searchResult = [];
     dirPathArray.forEach(filePath => {
         filePath = path.join(dirPath, filePath);
         const type = checkFileType(filePath);
-        searchResult[type[0]].push(type[1]);
+        searchResult.push({
+            filePath: type[1],
+            fileType: type[0]
+        });
     });
     return searchResult;
 }
