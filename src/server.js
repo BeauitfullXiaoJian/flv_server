@@ -74,7 +74,8 @@ app.get('/thumb', function (req, res) {
     const defaultFile = path.join(__dirname, 'assets/index.png');
     const toolPath = {
         ffmpegPath: path.join(__dirname, '../bin/ffmpeg/ffmpeg.exe'),
-        gsPath: path.join(__dirname, '../bin/gs/gswin64c.exe')
+        gsPath: path.join(__dirname, '../bin/gs/gswin64c.exe'),
+        gmPath: path.join(__dirname, '../bin/gm/gm.exe')
     };
     getFilePreviewThumb(filePath, tempPath, toolPath, defaultFile).then(stream => {
         res.set('Content-Type', 'image/jpeg');

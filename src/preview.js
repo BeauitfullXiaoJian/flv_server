@@ -25,9 +25,10 @@ function getFilePreviewThumb(filePath, tempPath, toolPath, defaultFile) {
     }
 
     if (type === fileType.IMG) {
-        return new Promise((resolve, _) => {
-            gm(filePath).resize(400).stream('JPG', (_, stream) => resolve(stream));
-        });
+        return new Promise((resolve, _) => resolve(fs.createReadStream(filePath)));
+        // return new Promise((resolve, _) => {
+        //     gm(filePath).resize(400).stream('JPG', (_, stream) => resolve(stream));
+        // });
     }
 
     if (type === fileType.PDF) {
