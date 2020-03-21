@@ -27,7 +27,7 @@ function getPath(lnkFile = '') {
         return reject(new Error('Input is neither string nor array!'))
     }
     let result = execSync(`powershell.exe -command "${commands.join('')}"`, { encoding: 'binary' });
-    return iconv.decode(result, 'cp936');
+    return iconv.decode(result, 'cp936').replace('\r\n', '');
 }
 
 module.exports = { getPath };
