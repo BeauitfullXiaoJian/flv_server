@@ -1,10 +1,11 @@
 
 const express = require('express');
+const fs = require('fs');
 const bodyParser = require('body-parser');
 const path = require('path');
 const app = express();
 const { ServerConfig } = require('./config');
-const { dirSearch, dirAll } = require('./dir');
+const { dirSearch, dirAll, fileType } = require('./dir');
 const { getFilePreviewThumb } = require('./preview');
 const { parseRange, parseRangeResponse } = require('./range');
 app.use(bodyParser.json());
@@ -70,7 +71,7 @@ app.get('/dir', function (req, res) {
         previewUrl: `${ServerConfig.apiHost}/thumb?path=${new Buffer(file.filePath).toString('hex')}`,
         downloadUrl: file.filePath.replace(path.join(__dirname, '../public'), '').substring(1),
         parentDir: dir
-    }))));
+    })).map(item => item.fileType === fileType.VIDEO ? Object.assign(item, { downloadUrl: new Buffer(item.filePath).toString('hex') }) : item)));
 });
 
 /**
@@ -99,7 +100,7 @@ app.get('/video', function (request, response) {
     }
 
     // 检查视频文件是否存在,并获取文件信息
-    const filePath = params.video;
+    const filePath = new Buffer(params.video, 'hex').toString();
     if (!fs.existsSync(filePath)) {
         return response.send('播放的视频不存在');
     }
