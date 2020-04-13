@@ -7,9 +7,10 @@ const { ServerConfig } = require('./config');
 const { dirSearch, dirAll } = require('./dir');
 const { getFilePreviewThumb } = require('./preview');
 const { parseRange, parseRangeResponse } = require('./range');
+const mime = require('mime-types');
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(express.static(__dirname + '/public'));
+app.use(express.static(__dirname + '/../public'));
 
 function createSuccessData(data) {
     return {
@@ -106,7 +107,7 @@ app.get('/video', function (request, response) {
     if (request.headers['range']) {
         const range = parseRange(request.headers['range'], fileStat.size);
         const stream = fs.createReadStream(filePath, range);
-        response = parseRangeResponse(range, response, 'video/x-flve');
+        response = parseRangeResponse(range, response, mime.lookup(filePath));
         stream.pipe(response);
     } else {
         const stream = fs.createReadStream(filePath);

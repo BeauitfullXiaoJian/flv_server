@@ -29,5 +29,3 @@ function getPath(lnkFile = '') {
     let result = execSync(`powershell.exe -command "${commands.join('')}"`, { encoding: 'binary' });
     return iconv.decode(result, 'cp936');
 }
-
-module.exports = { getPath };
