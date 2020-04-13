@@ -1,16 +1,25 @@
 
 const express = require('express');
+const fs = require('fs');
 const bodyParser = require('body-parser');
 const path = require('path');
 const app = express();
 const { ServerConfig } = require('./config');
-const { dirSearch, dirAll } = require('./dir');
+const { dirSearch, dirAll, fileType } = require('./dir');
 const { getFilePreviewThumb } = require('./preview');
 const { parseRange, parseRangeResponse } = require('./range');
 const mime = require('mime-types');
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(express.static(__dirname + '/../public'));
+app.use(express.static(path.join(__dirname, '../public')));
+
+const toolPath = {
+    ffmpegPath: path.join(__dirname, '../bin/ffmpeg/ffmpeg.exe'),
+    ffprobePath: path.join(__dirname, '../bin/ffmpeg/ffprobe.exe'),
+    gsPath: path.join(__dirname, '../bin/gs/gswin64c.exe'),
+    gmPath: path.join(__dirname, '../bin/gm/gm.exe'),
+    tempPath: path.join(__dirname, '../temp')
+};
 
 function createSuccessData(data) {
     return {
@@ -47,8 +56,8 @@ app.get('/file', function (req, res) {
         rows: files.splice(offset, limit).map(filePath => ({
             filePath,
             previewUrl: `${ServerConfig.apiHost}/thumb?path=${filePath}`,
-            downloadUrl: filePath.replace(dir, ''),
-            parentDir: dir
+            downloadUrl: file.filePath.replace(dir, '').substring(1),
+            parentDir: dir,
         }))
     }));
 });
@@ -58,25 +67,21 @@ app.get('/file', function (req, res) {
  */
 app.get('/dir', function (req, res) {
     const dir = req.query.dir || path.join(__dirname, '../public');
-    const files = dirSearch(dir);
+    const files = dirSearch(dir, toolPath);
     res.send(createSuccessData(files.map(file => Object.assign(file, {
-        previewUrl: `${ServerConfig.apiHost}/thumb?path=${file.filePath}`,
-        downloadUrl: file.filePath.replace(dir, ''),
+        previewUrl: `${ServerConfig.apiHost}/thumb?path=${new Buffer(file.filePath).toString('hex')}`,
+        downloadUrl: file.filePath.replace(path.join(__dirname, '../public'), '').substring(1),
         parentDir: dir
-    }))));
+    })).map(item => item.fileType === fileType.VIDEO ? Object.assign(item, { downloadUrl: new Buffer(item.filePath).toString('hex') }) : item)));
 });
 
 /**
  * 获取文件缩略图
  */
 app.get('/thumb', function (req, res) {
-    const filePath = req.query.path;
+    const filePath = new Buffer(req.query.path, 'hex').toString();
     const tempPath = path.join(__dirname, '../temp');
-    const defaultFile = path.join(__dirname, 'assets/index.png');
-    const toolPath = {
-        ffmpegPath: path.join(__dirname, '../bin/ffmpeg/ffmpeg.exe'),
-        gsPath: path.join(__dirname, '../bin/gs/gswin64c.exe')
-    };
+    const defaultFile = path.join(__dirname, 'assets/other.png');
     getFilePreviewThumb(filePath, tempPath, toolPath, defaultFile).then(stream => {
         res.set('Content-Type', 'image/jpeg');
         if (stream) {
@@ -96,7 +101,7 @@ app.get('/video', function (request, response) {
     }
 
     // 检查视频文件是否存在,并获取文件信息
-    const filePath = params.video;
+    const filePath = new Buffer(params.video, 'hex').toString();
     if (!fs.existsSync(filePath)) {
         return response.send('播放的视频不存在');
     }

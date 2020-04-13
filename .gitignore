@@ -3,3 +3,4 @@ public/*.flv
 bin/*
 temp/*
 public/*
+package-lock.json
