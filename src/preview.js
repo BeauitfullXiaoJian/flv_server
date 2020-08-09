@@ -33,6 +33,10 @@ function getFilePreviewThumb(filePath, tempPath, toolPath, defaultFile) {
         return new Promise((resolve, _) => resolve(fs.createReadStream(tmpFile)));
     }
 
+    if (type === fileType.MUSIC) {
+        return new Promise((resolve, _) => resolve(fs.createReadStream(path.join(__dirname, 'assets/music.png'))));
+    }
+
     if (type === fileType.DIR) {
         return new Promise((resolve, _) => resolve(fs.createReadStream(path.join(__dirname, 'assets/dir.png'))));
     }

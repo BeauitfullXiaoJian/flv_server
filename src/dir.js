@@ -9,12 +9,14 @@ const fileType = {
     IMG: 'img',
     VIDEO: 'video',
     PDF: 'pdf',
+    MUSIC: 'music',
     OTHER: 'other'
 };
 const fileExName = {
     IMG: ['.jpg', '.jpeg', '.gif', '.webp', '.png', '.bmp'],
     PDF: ['.pdf'],
-    VIDEO: ['.mp4', '.flv', '.wmv']
+    VIDEO: ['.mp4', '.flv', '.wmv'],
+    MUSIC: ['.mp3', '.wav', '.flac']
 }
 
 /**
@@ -43,7 +45,7 @@ function dirSearch(dirPath, toolPath) {
         searchResult.push({
             filePath: type[1],
             fileType: type[0],
-            size: type[2]
+            previewSize: type[2]
         });
     });
     return searchResult;
@@ -81,6 +83,9 @@ function checkFileType(filePath, toolPath) {
                 const tmpFile = path.join(toolPath.tempPath, new Date().getTime() + '.jpeg');
                 execSync(`${toolPath.gsPath} -sDEVICE=jpeg -dFirstPage=1 -dLastPage=1 -sOutputFile=${tmpFile} ${filePath}`);
                 return [fileType.PDF, filePath, sizeOf(tmpFile)];
+            }
+            if (~fileExName.MUSIC.indexOf(exName)) {
+                return [fileType.MUSIC, filePath, { width: 100, height: 100, type: 'png' }];
             }
             if (exName === '.lnk') {
                 filePath = getPath(filePath);

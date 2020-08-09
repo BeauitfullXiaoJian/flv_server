@@ -6,6 +6,7 @@ const path = require('path');
 const app = express();
 const { ServerConfig } = require('./config');
 const { dirSearch, dirAll, fileType } = require('./dir');
+const { getApi, saveApi } = require('./saver');
 const { getFilePreviewThumb } = require('./preview');
 const { parseRange, parseRangeResponse } = require('./range');
 const mime = require('mime-types');
@@ -67,12 +68,18 @@ app.get('/file', function (req, res) {
  */
 app.get('/dir', function (req, res) {
     const dir = req.query.dir || path.join(__dirname, '../public');
-    const files = dirSearch(dir, toolPath);
-    res.send(createSuccessData(files.map(file => Object.assign(file, {
-        previewUrl: `${ServerConfig.apiHost}/thumb?path=${new Buffer(file.filePath).toString('hex')}`,
-        downloadUrl: file.filePath.replace(path.join(__dirname, '../public'), '').substring(1),
-        parentDir: dir
-    })).map(item => item.fileType === fileType.VIDEO ? Object.assign(item, { downloadUrl: new Buffer(item.filePath).toString('hex') }) : item)));
+    const apiName = '/dir' + dir;
+    let data = getApi(apiName);
+    if (data === null) {
+        const files = dirSearch(dir, toolPath);
+        data = createSuccessData(files.map(file => Object.assign(file, {
+            previewUrl: `${ServerConfig.apiHost}/thumb?path=${new Buffer(file.filePath).toString('hex')}`,
+            downloadUrl: file.filePath.replace(path.join(__dirname, '../public'), '').substring(1),
+            parentDir: dir
+        })).map(item => [fileType.VIDEO, ~fileType.MUSIC].indexOf(item.fileType) ? Object.assign(item, { downloadUrl: new Buffer(item.filePath).toString('hex') }) : item));
+        saveApi(apiName, data);
+    }
+    res.send(data);
 });
 
 /**
