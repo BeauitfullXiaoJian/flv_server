@@ -1,6 +1,7 @@
 'use strict';
 
 const fs = require('fs');
+const mime = require('mime-types');
 const { getIPAddress } = require('../ip');
 
 function parseRange(str, videoSize) {
@@ -52,6 +53,7 @@ function addVideApi(app, path) {
         const fileStat = fs.statSync(filePath);
 
         if (request.headers['range']) {
+            console.log(request.headers['range'])
             const range = parseRange(request.headers['range'], fileStat.size);
             const stream = fs.createReadStream(filePath, range);
             response = parseRangeResponse(range, response, mime.lookup(filePath));
