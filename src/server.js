@@ -15,8 +15,8 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, '../public')));
 
 const toolPath = {
-    ffmpegPath: path.join(__dirname, '../bin/ffmpeg/ffmpeg.exe'),
-    ffprobePath: path.join(__dirname, '../bin/ffmpeg/ffprobe.exe'),
+    ffmpegPath: path.join(__dirname, '../bin/ffmpeg/ffmpeg'),
+    ffprobePath: path.join(__dirname, '../bin/ffmpeg/ffprobe'),
     gsPath: path.join(__dirname, '../bin/gs/gswin64c.exe'),
     gmPath: path.join(__dirname, '../bin/gm/gm.exe'),
     tempPath: path.join(__dirname, '../temp')
@@ -67,16 +67,16 @@ app.get('/file', function (req, res) {
  * 获取一个文件夹中的所有文件，不包含子目录
  */
 app.get('/dir', function (req, res) {
-    const dir = req.query.dir || path.join(__dirname, '../public');
+    const dir = req.query.dir || '/Users/xiaojian' // path.join(__dirname, '../public');
     const apiName = '/dir' + dir;
     let data = getApi(apiName);
     if (data === null) {
         const files = dirSearch(dir, toolPath);
         data = createSuccessData(files.map(file => Object.assign(file, {
-            previewUrl: `${ServerConfig.apiHost}/thumb?path=${new Buffer(file.filePath).toString('hex')}`,
-            downloadUrl: file.filePath.replace(path.join(__dirname, '../public'), '').substring(1),
+            previewUrl: `${ServerConfig.apiHost}/thumb?path=${Buffer.from(file.filePath).toString('hex')}`,
+            downloadUrl: `${ServerConfig.apiHost}/video?video=${Buffer.from(file.filePath).toString('hex')}`,
             parentDir: dir
-        })).map(item => [fileType.VIDEO, ~fileType.MUSIC].indexOf(item.fileType) ? Object.assign(item, { downloadUrl: new Buffer(item.filePath).toString('hex') }) : item));
+        })));
         saveApi(apiName, data);
     }
     res.send(data);
@@ -86,11 +86,12 @@ app.get('/dir', function (req, res) {
  * 获取文件缩略图
  */
 app.get('/thumb', function (req, res) {
-    const filePath = new Buffer(req.query.path, 'hex').toString();
+    const filePath = Buffer.from(req.query.path, 'hex').toString();
     const tempPath = path.join(__dirname, '../temp');
-    const defaultFile = path.join(__dirname, 'assets/other.png');
-    getFilePreviewThumb(filePath, tempPath, toolPath, defaultFile).then(stream => {
-        res.set('Content-Type', 'image/jpeg');
+    const defaultFile = path.join(__dirname, 'assets/other.svg');
+    getFilePreviewThumb(filePath, tempPath, toolPath, defaultFile).then(preview => {
+        const stream = preview.stream;
+        res.set('Content-Type', preview.mime);
         if (stream) {
             stream.pipe(res);
         }
@@ -108,12 +109,11 @@ app.get('/video', function (request, response) {
     }
 
     // 检查视频文件是否存在,并获取文件信息
-    const filePath = new Buffer(params.video, 'hex').toString();
+    const filePath = Buffer.from(params.video, 'hex').toString();
     if (!fs.existsSync(filePath)) {
         return response.send('播放的视频不存在');
     }
     const fileStat = fs.statSync(filePath);
-
 
     // 根据range进行跳转
     if (request.headers['range']) {
@@ -123,7 +123,9 @@ app.get('/video', function (request, response) {
         stream.pipe(response);
     } else {
         const stream = fs.createReadStream(filePath);
-        response.writeHead('200', "Partial Content");
+        response.setHeader('200', "Partial Content");
+        response.setHeader("Content-Type", mime.lookup(filePath));
+        response.setHeader("Content-Length", fileStat.size);
         stream.pipe(response);
     }
 });

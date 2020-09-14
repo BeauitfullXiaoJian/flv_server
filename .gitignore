@@ -4,3 +4,4 @@ bin/*
 temp/*
 public/*
 package-lock.json
+.DS_Store

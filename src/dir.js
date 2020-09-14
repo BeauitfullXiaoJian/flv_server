@@ -13,7 +13,7 @@ const fileType = {
     OTHER: 'other'
 };
 const fileExName = {
-    IMG: ['.jpg', '.jpeg', '.gif', '.webp', '.png', '.bmp'],
+    IMG: ['.jpg', '.jpeg', '.gif', '.webp', '.png', '.bmp', '.svg'],
     PDF: ['.pdf'],
     VIDEO: ['.mp4', '.flv', '.wmv'],
     MUSIC: ['.mp3', '.wav', '.flac']
@@ -39,10 +39,11 @@ function dirAll(dirPath) {
 function dirSearch(dirPath, toolPath) {
     const dirPathArray = fs.readdirSync(dirPath);
     const searchResult = [];
-    dirPathArray.forEach(filePath => {
-        filePath = path.join(dirPath, filePath);
+    dirPathArray.forEach(fileName => {
+        filePath = path.join(dirPath, fileName);
         const type = checkFileType(filePath, toolPath);
         searchResult.push({
+            fileName,
             filePath: type[1],
             fileType: type[0],
             previewSize: type[2]
@@ -85,16 +86,16 @@ function checkFileType(filePath, toolPath) {
                 return [fileType.PDF, filePath, sizeOf(tmpFile)];
             }
             if (~fileExName.MUSIC.indexOf(exName)) {
-                return [fileType.MUSIC, filePath, { width: 100, height: 100, type: 'png' }];
+                return [fileType.MUSIC, filePath, { width: 100, height: 100, type: 'svg' }];
             }
             if (exName === '.lnk') {
                 filePath = getPath(filePath);
                 return checkFileType(filePath, toolPath);
             }
-            return [fileType.OTHER, filePath, { width: 100, height: 100, type: 'png' }];
+            return [fileType.OTHER, filePath, { width: 100, height: 100, type: 'svg' }];
         }
     }
-    return [fileType.OTHER, filePath, { width: 100, height: 100, type: 'png' }];
+    return [fileType.OTHER, filePath, { width: 100, height: 100, type: 'svg' }];
 }
 
 module.exports = { dirAll, dirSearch, checkFileType, fileExName, fileType };

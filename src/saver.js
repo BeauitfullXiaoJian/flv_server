@@ -1,6 +1,7 @@
+
 const low = require('lowdb');
 const FileSync = require('lowdb/adapters/FileSync');
-const db = low(new FileSync(__dirname + '/public/db.json'));
+const db = low(new FileSync(__dirname + '/../public/db.json'));
 db.defaults({ notes: [], api: [] }).write();
 
 function saveNote(note) {

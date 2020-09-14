@@ -1,5 +1,5 @@
 const ServerConfig = {
-    apiHost: 'http://192.168.31.215:8000'
+    apiHost: 'http://10.3.80.49:8000'
 };
 
 module.exports = { ServerConfig };

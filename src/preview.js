@@ -1,6 +1,7 @@
 const { checkFileType, fileType } = require('./dir');
 const path = require('path');
 const fs = require('fs');
+const mime = require('mime-types');
 const execSync = require('child_process').execSync;
 
 /**
@@ -13,7 +14,6 @@ const execSync = require('child_process').execSync;
  * @returns {Promise<Stream>}
  */
 function getFilePreviewThumb(filePath, tempPath, toolPath, defaultFile) {
-    console.log(filePath);
     const type = checkFileType(filePath, toolPath)[0];
 
     const tmpFile = path.join(tempPath, new Date().getTime() + '.jpeg');
@@ -21,27 +21,45 @@ function getFilePreviewThumb(filePath, tempPath, toolPath, defaultFile) {
     if (type === fileType.VIDEO) {
 
         execSync(`${toolPath.ffmpegPath} -i "${filePath}" -ss 00:00:01.000 -vframes 1 ${tmpFile}`);
-        return new Promise((resolve, _) => resolve(fs.createReadStream(tmpFile)));
+        return new Promise((resolve, _) => resolve({
+            stream: fs.createReadStream(tmpFile),
+            mime: mime.lookup(tmpFile)
+        }));
     }
 
     if (type === fileType.IMG) {
-        return new Promise((resolve, _) => resolve(fs.createReadStream(filePath)));
+        return new Promise((resolve, _) => resolve({
+            stream: fs.createReadStream(filePath),
+            mime: mime.lookup(filePath)
+        }));
     }
 
     if (type === fileType.PDF) {
         execSync(`${toolPath.gsPath} -sDEVICE=jpeg -dFirstPage=1 -dLastPage=1 -sOutputFile=${tmpFile} ${filePath}`);
-        return new Promise((resolve, _) => resolve(fs.createReadStream(tmpFile)));
+        return new Promise((resolve, _) => resolve({
+            stream: fs.createReadStream(tmpFile),
+            mime: mime.lookup(tmpFile)
+        }));
     }
 
     if (type === fileType.MUSIC) {
-        return new Promise((resolve, _) => resolve(fs.createReadStream(path.join(__dirname, 'assets/music.png'))));
+        return new Promise((resolve, _) => resolve({
+            stream: fs.createReadStream(path.join(__dirname, 'assets/audio.svg'),),
+            mime: 'image/svg+xml'
+        }));
     }
 
     if (type === fileType.DIR) {
-        return new Promise((resolve, _) => resolve(fs.createReadStream(path.join(__dirname, 'assets/dir.png'))));
+        return new Promise((resolve, _) => resolve({
+            stream: fs.createReadStream(path.join(__dirname, 'assets/storage.svg'),),
+            mime: 'image/svg+xml'
+        }));
     }
 
-    return new Promise((resolve, _) => resolve(fs.createReadStream(defaultFile)));
+    return new Promise((resolve, _) => resolve({
+        stream: fs.createReadStream(defaultFile),
+        mime: 'image/svg+xml'
+    }));
 }
 
 module.exports = { getFilePreviewThumb };
