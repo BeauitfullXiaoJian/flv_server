@@ -82,8 +82,9 @@ function checkFileType(filePath, toolPath) {
             if (~fileExName.PDF.indexOf(exName)) {
                 console.log(toolPath);
                 const tmpFile = path.join(toolPath.tempPath, new Date().getTime() + '.jpeg');
-                execSync(`${toolPath.gsPath} -sDEVICE=jpeg -dFirstPage=1 -dLastPage=1 -sOutputFile=${tmpFile} ${filePath}`);
-                return [fileType.PDF, filePath, sizeOf(tmpFile)];
+                // execSync(`${toolPath.gsPath} -sDEVICE=jpeg -dFirstPage=1 -dLastPage=1 -sOutputFile=${tmpFile} ${filePath}`);
+                // return [fileType.PDF, filePath, sizeOf(tmpFile)];
+                return [fileType.PDF, filePath, { width: 100, height: 100, type: 'svg' }];
             }
             if (~fileExName.MUSIC.indexOf(exName)) {
                 return [fileType.MUSIC, filePath, { width: 100, height: 100, type: 'svg' }];

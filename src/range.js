@@ -1,5 +1,8 @@
 'use strict';
 
+const fs = require('fs');
+const mime = require('mime-types');
+
 function parseRange(str, videoSize) {
     const endOffset = videoSize - 1;
     // bytes=162564492-
@@ -34,4 +37,37 @@ function parseRangeResponse(range, response, contentType) {
     return response;
 }
 
-module.exports = { parseRange, parseRangeResponse };
+function addVideoApi(app, path) {
+
+    app.get(path, function (request, response) {
+
+        // 检查视频路径参数
+        const params = request.query;
+        if (!params.hasOwnProperty('video')) {
+            return response.send('参数错误,缺少视频名称');
+        }
+
+        // 检查视频文件是否存在,并获取文件信息
+        const filePath = Buffer.from(params.video, 'hex').toString();
+        if (!fs.existsSync(filePath)) {
+            return response.send('播放的视频不存在');
+        }
+        const fileStat = fs.statSync(filePath);
+
+        // 根据range进行跳转
+        if (request.headers['range']) {
+            const range = parseRange(request.headers['range'], fileStat.size);
+            const stream = fs.createReadStream(filePath, range);
+            response = parseRangeResponse(range, response, mime.lookup(filePath));
+            stream.pipe(response);
+        } else {
+            const stream = fs.createReadStream(filePath);
+            response.setHeader('200', "Partial Content");
+            response.setHeader("Content-Type", mime.lookup(filePath));
+            response.setHeader("Content-Length", fileStat.size);
+            stream.pipe(response);
+        }
+    });
+}
+
+module.exports = { parseRange, parseRangeResponse, addVideoApi };
