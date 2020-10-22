@@ -39,21 +39,6 @@ function getFileType(filePath, toolPath) {
     return [fileType.OTHER, filePath];
 }
 
-// function getFilePreview(filePath) {
-//     const fileReults = getFileType(filePath);
-//     const tmpFile = path.join(tempPath, Buffer.from(filePath).toString('hex') + '.jpeg');
-
-//     if(!fs.existsSync(tempPath)){
-
-//     }
-
-//     return new Promise((resolve, _) => resolve({
-//         stream: fs.createReadStream(tmpFile),
-//         mime: mime.lookup(tmpFile),
-//         size: 
-//     }));
-// }
-
 /**
  * 
  * @param {string} filePath 预览文件地址
@@ -67,9 +52,11 @@ function getFilePreviewThumb(filePath, tempPath, toolPath, defaultFile) {
     const type = checkFileType(filePath, toolPath)[0];
 
     // const tmpFile = path.join(tempPath, new Date().getTime() + '.jpeg');
-    const tmpFile = path.join(tempPath, Buffer.from(filePath).toString('hex') + '.jpeg');
+    let hexStr = Buffer.from(filePath).toString('hex');
+    hexStr = hexStr.substring(hexStr.length > 150 ? hexStr.length - 150 : 0, hexStr.length);
+    const tmpFile = path.join(tempPath, hexStr + '.jpeg');
 
-    if (fs.existsSync(tempPath)) {
+    if (fs.existsSync(tmpFile)) {
         return new Promise((resolve, _) => resolve({
             stream: fs.createReadStream(tmpFile),
             mime: mime.lookup(tmpFile)

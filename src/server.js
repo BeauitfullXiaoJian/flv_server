@@ -10,13 +10,14 @@ const { getApi, saveApi } = require('./saver');
 const { getFilePreviewThumb } = require('./preview');
 const { parseRange, parseRangeResponse } = require('./range');
 const mime = require('mime-types');
+const { printIPAddress } = require('./ip');
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, '../public')));
 
 const toolPath = {
-    ffmpegPath: path.join(__dirname, '../bin/ffmpeg/ffmpeg'),
-    ffprobePath: path.join(__dirname, '../bin/ffmpeg/ffprobe'),
+    ffmpegPath: 'ffmpeg', // path.join(__dirname, '../bin/ffmpeg/ffmpeg'),
+    ffprobePath: 'ffprobe',// path.join(__dirname, '../bin/ffmpeg/ffprobe'),
     gsPath: path.join(__dirname, '../bin/gs/gswin64c.exe'),
     gmPath: path.join(__dirname, '../bin/gm/gm.exe'),
     tempPath: path.join(__dirname, '../temp')
@@ -130,4 +131,5 @@ app.get('/video', function (request, response) {
     }
 });
 
+printIPAddress();
 app.listen(8000);
